@@ -6,6 +6,7 @@ class Node:
     def __init__(self, value):
         self.value = value  # The data this node holds
         self.next = None    # Reference to the next node (none = end of chain)
+        self.prev = None
 
     def __repr__(self):
         return f"Node ({self.value})"
@@ -16,21 +17,34 @@ class LinkedList:
 
     def __init__(self):
         self.head = None # The list starts empty => no nodes yet
+        self.tail = None
 
     def insert_at_beginning(self, value):
         """Add a new node at the front of the list. O(1) time"""
 
         new_node = Node(value)
-        new_node.next = self.head   # New node points to the old
-        self.head = new_node    # New node becomes the new head
+
+        if self.head is None:
+            self.head = new_node
+            self.tail = new_node
+        else:
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
 
     def insert_at_end(self,value):
-        """Add new node at the end of the list. O(n) time - must walk to the end."""
+        """Add new node at the end of the list. O(1) time."""
 
         new_node = Node(value)
+    
         if self.head is None: # if the list is empty, new node is the head
             self.head = new_node
-            return
+            self.tail = new_node
+        else:
+            new_node.prev = self.tail
+            self.tail.next = new_node
+            self.tail = new_node
+            return 
         
         current = self.head 
         while current.next: # Walk to the last node
@@ -58,19 +72,36 @@ class LinkedList:
 
     def delete(self, target):
         """Remove the first node with the given value. Return True if found, False if not."""
+
         if self.head is None:
             return False
 
         if self.head.value == target:
             self.head = self.head.next
+
+            if self.head is None:
+                self.tail = None
+            else:
+                self.head.prev = None
+
             return True
+
         current = self.head
+
         while current.next:
             if current.next.value == target:
-                current.next = current.next.next
+                node_to_delete = current.next
+                current.next = node_to_delete.next
+
+                if node_to_delete.next is not None:
+                    node_to_delete.next.prev = current
+                else:
+                    self.tail = current
+
                 return True
 
             current = current.next
+
         return False
 
     def length(self):
@@ -90,6 +121,14 @@ class LinkedList:
             result.append(current.value)
             current = current.next
         return result
+    def display_reverse(self):
+        current = self.tail
+
+        while current is not None:
+            print(current.value, end=" -> ")
+            current = current.prev
+
+    print("None")
     
 def is_balanced(text):
     """Return True if all brackets in text are properly matched. Handles: (), [], {}"""
@@ -109,6 +148,7 @@ def is_balanced(text):
             if stack.pop() != pairs[char]:
                 return False
     return not stack
+
 
 class TaskProcessor: 
     def __init__(self):
@@ -191,3 +231,6 @@ print(processor.process_next())
 print(processor.process_next())
 print(processor.process_next())
 print(processor.process_next())
+
+ll.display()
+ll.display_reverse()
