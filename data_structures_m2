@@ -32,33 +32,39 @@ class LinkedList:
             self.head.prev = new_node
             self.head = new_node
 
-    def insert_at_end(self,value):
-        """Add new node at the end of the list. O(1) time."""
+    # Append a node in O(1) time using the tail pointer.
+    def insert_at_end(self, value):
+        """Add a new node at the end of the list."""
 
         new_node = Node(value)
-    
-        if self.head is None: # if the list is empty, new node is the head
+
+        # Initialize both pointers when the list is empty.
+        if self.head is None:
             self.head = new_node
             self.tail = new_node
-        else:
-            new_node.prev = self.tail
-            self.tail.next = new_node
-            self.tail = new_node
-            return 
-        
-        current = self.head 
-        while current.next: # Walk to the last node
-            current = current.next
-        current.next = new_node    # Last node now points to the new node 
+            return
 
+        # Connect the new node to the current tail.
+        new_node.prev = self.tail
+        self.tail.next = new_node
+
+        # Update the tail without traversing the list.
+        self.tail = new_node
+
+
+    # Display the complete linked list in forward order.
     def display(self):
-        """Prints the list in a readable format."""
+        """Print all node values from head to tail."""
         elements = []
         current = self.head
-        while current:
+
+        # Collect values before printing the complete list.
+        while current is not None:
             elements.append(str(current.value))
-            current = current.next 
-            print(" -> ".join(elements) + " -> None")
+            current = current.next
+
+        print(" -> ".join(elements) + " -> None")
+
 
     def search(self, target):
         """Find a value in the list. Return True/False. O(n) time."""
@@ -112,7 +118,7 @@ class LinkedList:
             count = count + 1
             current = current.next
         return count
-        
+
     def to_list(self):
         """Convert the linked list to a Python list. Returns a list of values."""
         result = []
@@ -121,15 +127,20 @@ class LinkedList:
             result.append(current.value)
             current = current.next
         return result
+
+    # Display the complete linked list in reverse using prev pointers.
     def display_reverse(self):
+        """Print all node values from tail to head."""
+        elements = []
         current = self.tail
 
+        # Traverse backward without modifying the list.
         while current is not None:
-            print(current.value, end=" -> ")
+            elements.append(str(current.value))
             current = current.prev
 
-    print("None")
-    
+        print(" -> ".join(elements) + " -> None")
+
 def is_balanced(text):
     """Return True if all brackets in text are properly matched. Handles: (), [], {}"""
     stack = []
@@ -141,7 +152,7 @@ def is_balanced(text):
     for char in text:
         if char in ["(", "[", "{"]:
             stack.append(char)
-            
+
         elif char in pairs:
             if not stack:
                 return False
@@ -150,7 +161,7 @@ def is_balanced(text):
     return not stack
 
 
-class TaskProcessor: 
+class TaskProcessor:
     def __init__(self):
         self.tasks = deque()
 

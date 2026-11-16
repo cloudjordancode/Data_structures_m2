@@ -1,0 +1,237 @@
+from collections import deque
+
+class Node:
+    """A single node in a linked list."""
+
+    def __init__(self, value):
+        self.value = value  # The data this node holds
+        self.next = None    # Reference to the next node (none = end of chain)
+        self.prev = None
+
+    def __repr__(self):
+        return f"Node ({self.value})"
+
+
+class LinkedList:
+    """A singly linked list."""
+
+    def __init__(self):
+        self.head = None # The list starts empty => no nodes yet
+        self.tail = None
+
+    def insert_at_beginning(self, value):
+        """Add a new node at the front of the list. O(1) time"""
+
+        new_node = Node(value)
+
+        if self.head is None:
+            self.head = new_node
+            self.tail = new_node
+        else:
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
+
+        # Append a node in O(1) time using the tail pointer.
+    def insert_at_end(self, value):
+        """Add a new node at the end of the list."""
+
+        new_node = Node(value)
+
+        # Initialize both pointers when the list is empty.
+        if self.head is None:
+            self.head = new_node
+            self.tail = new_node
+            return
+
+        # Connect the new node to the current tail.
+        new_node.prev = self.tail
+        self.tail.next = new_node
+
+        # Update the tail without traversing the list.
+        self.tail = new_node
+
+
+    def display(self):
+        """Prints the list in a readable format."""
+        elements = []
+        current = self.head
+        while current:
+            elements.append(str(current.value))
+            current = current.next
+            print(" -> ".join(elements) + " -> None")
+
+    def search(self, target):
+        """Find a value in the list. Return True/False. O(n) time."""
+
+        current = self.head
+        while current:
+            if current.value == target:
+                return True
+            current = current.next
+        return False
+
+    def delete(self, target):
+        """Remove the first node with the given value. Return True if found, False if not."""
+
+        if self.head is None:
+            return False
+
+        if self.head.value == target:
+            self.head = self.head.next
+
+            if self.head is None:
+                self.tail = None
+            else:
+                self.head.prev = None
+
+            return True
+
+        current = self.head
+
+        while current.next:
+            if current.next.value == target:
+                node_to_delete = current.next
+                current.next = node_to_delete.next
+
+                if node_to_delete.next is not None:
+                    node_to_delete.next.prev = current
+                else:
+                    self.tail = current
+
+                return True
+
+            current = current.next
+
+        return False
+
+    def length(self):
+        """Return the number of nodes in the list. O(n) time."""
+        count = 0
+        current = self.head
+        while current is not None:
+            count = count + 1
+            current = current.next
+        return count
+
+    def to_list(self):
+        """Convert the linked list to a Python list. Returns a list of values."""
+        result = []
+        current = self.head
+        while current is not None:
+            result.append(current.value)
+            current = current.next
+        return result
+    def display_reverse(self):
+        current = self.tail
+
+        while current is not None:
+            print(current.value, end=" -> ")
+            current = current.prev
+
+    print("None")
+
+def is_balanced(text):
+    """Return True if all brackets in text are properly matched. Handles: (), [], {}"""
+    stack = []
+    pairs = {
+        ")": "(",
+        "]": "[",
+        "}": "{"
+    }
+    for char in text:
+        if char in ["(", "[", "{"]:
+            stack.append(char)
+
+        elif char in pairs:
+            if not stack:
+                return False
+            if stack.pop() != pairs[char]:
+                return False
+    return not stack
+
+
+class TaskProcessor:
+    def __init__(self):
+        self.tasks = deque()
+
+    def add_task(self, name):
+        self.tasks.append(name)
+
+    def process_next(self):
+        if not self.tasks:
+            return None
+        return self.tasks.popleft()
+
+
+my_list = LinkedList()
+my_list.insert_at_beginning(3)
+my_list.insert_at_beginning(2)
+my_list.insert_at_beginning(1)
+my_list.display()
+my_list.insert_at_end(4)
+my_list.display()
+
+print(my_list.search(3))
+print(my_list.search(9))
+
+# STACK: Last In, First Out
+
+stack = []
+
+stack.append("page_1") # Visit page 1
+stack.append("page_2")
+stack.append("page_3")
+
+print("Stack:", stack)
+
+back = stack.pop() # Go back - removes the most recent
+print("Click backed on page:", back)
+print("Stack now:", stack)
+
+# Queue: First In, First Out
+
+queue = deque()
+
+queue.append("customer_1") # Customer 1 joins the line
+queue.append("customer_2") # Customer 2 joins the line
+queue.append("customer_3") # Customer 3 joins the line
+
+print("Queue:", list(queue))
+
+served = queue.popleft()    #Serve the first customer
+print("Served:", served)
+print("Queue now:", list(queue))
+
+
+ll = LinkedList()
+
+for val in [10, 20, 30, 40, 50]:
+    ll.insert_at_end(val)
+
+ll.display()
+print(ll.length())
+ll.delete(30)
+ll.display()           # 10 -> 20 -> 40 -> 50 -> None
+print(ll.to_list())
+
+print(is_balanced("()"))            # True
+print(is_balanced("({[]})"))        # True
+print(is_balanced("(]"))            # False
+print(is_balanced("([)]"))          # False
+print(is_balanced("hello (world)")) # True
+
+processor = TaskProcessor()
+
+processor.add_task("Task 1")
+processor.add_task("Task 2")
+processor.add_task("Task 3")
+
+print(processor.process_next())
+
+print(processor.process_next())
+print(processor.process_next())
+print(processor.process_next())
+
+ll.display()
+ll.display_reverse()
